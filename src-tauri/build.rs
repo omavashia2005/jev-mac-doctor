@@ -1,0 +1,38 @@
+fn main() {
+    tauri_build::build();
+
+    #[cfg(target_os = "macos")]
+    bindgen::Builder::default()
+        .header("src/macos_bindings.h")
+        .allowlist_function("proc_listallpids")
+        .allowlist_function("proc_pidinfo")
+        .allowlist_function("proc_pidpath")
+        .allowlist_function("proc_pid_rusage")
+        .allowlist_function("mach_host_self")
+        .allowlist_function("host_statistics")
+        .allowlist_function("host_statistics64")
+        .allowlist_function("host_page_size")
+        .allowlist_function("sysctlbyname")
+        .allowlist_function("getifaddrs")
+        .allowlist_function("freeifaddrs")
+        .allowlist_type("rusage_info_v6")
+        .allowlist_type("proc_bsdinfo")
+        .allowlist_type("host_cpu_load_info")
+        .allowlist_type("vm_statistics64")
+        .allowlist_type("xsw_usage")
+        .allowlist_type("ifaddrs")
+        .allowlist_type("if_data")
+        .allowlist_var("RUSAGE_INFO_CURRENT")
+        .allowlist_var("RUSAGE_INFO_V[4-6]")
+        .allowlist_var("PROC_PIDTBSDINFO")
+        .allowlist_var("HOST_CPU_LOAD_INFO")
+        .allowlist_var("HOST_VM_INFO64")
+        .allowlist_var("CPU_STATE_.*")
+        .allowlist_var("AF_LINK")
+        .allowlist_var("IFF_LOOPBACK")
+        .derive_default(true)
+        .generate()
+        .expect("generate read-only macOS telemetry bindings")
+        .write_to_file(std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("macos.rs"))
+        .expect("write macOS telemetry bindings");
+}
